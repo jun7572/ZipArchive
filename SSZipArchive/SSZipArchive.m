@@ -1018,10 +1018,19 @@ BOOL _fileIsSymbolicLink(const unz_file_info *fileInfo);
     if (@available(macOS 10.10, iOS 8.0, watchOS 2.0, tvOS 9.0, *)) {
 #endif
         // supported encodings are in [NSString availableStringEncodings]
-        [NSString stringEncodingForData:data encodingOptions:nil convertedString:&strPath usedLossyConversion:nil];
+//        [NSString stringEncodingForData:data encodingOptions:nil convertedString:&strPath usedLossyConversion:nil];
+        NSArray<NSNumber *> *encodings = @[@(kCFStringEncodingMacChineseSimp)];
+                                          for (NSNumber *encoding in encodings) {
+                                              strPath = [NSString stringWithCString:filename encoding:(NSStringEncoding)CFStringConvertEncodingToNSStringEncoding(encoding.unsignedIntValue)];
+                                              if (strPath) {
+                                                  break;
+                                              }
+                                          }
     } else {
         // fallback to a simple manual detect for macOS 10.9 or older
-        NSArray<NSNumber *> *encodings = @[@(kCFStringEncodingGB_18030_2000), @(kCFStringEncodingShiftJIS)];
+//         NSArray<NSNumber *> *encodings = @[@(kCFStringEncodingGB_18030_2000), @(kCFStringEncodingShiftJIS),@(kCFStringEncodingUTF8),@(kCFStringEncodingGBK_95)];
+        
+      NSArray<NSNumber *> *encodings = @[@(kCFStringEncodingMacChineseSimp)];
         for (NSNumber *encoding in encodings) {
             strPath = [NSString stringWithCString:filename encoding:(NSStringEncoding)CFStringConvertEncodingToNSStringEncoding(encoding.unsignedIntValue)];
             if (strPath) {
